@@ -1,24 +1,37 @@
 package eu.kanade.tachiyomi.extension.all.nhentai
 
+import org.jsoup.nodes.Element
+
 object NHUtils {
-    fun getArtists(tags: List<TagResponse>): String =
-        tags.filter { it.type == "artist" }.joinToString(", ") { it.name }
+    fun getArtists(data: Hentai): String {
+        val artists = data.tags.filter { it.type == "artist" }
+        return artists.joinToString(", ") { it.name }
+    }
 
-    fun getGroups(tags: List<TagResponse>): String? =
-        tags.filter { it.type == "group" }
-            .joinToString(", ") { it.name }
-            .takeIf { it.isNotBlank() }
+    fun getGroups(data: Hentai): String? {
+        val groups = data.tags.filter { it.type == "group" }
+        return groups.joinToString(", ") { it.name }.takeIf { it.isBlank() }
+    }
 
-    fun getTags(tags: List<TagResponse>): String =
-        tags.filter { it.type == "tag" }.joinToString(", ") { it.name }
-
-    fun getTagDescription(tags: List<TagResponse>): String {
-        val grouped = tags.groupBy { it.type }
+    fun getTagDescription(data: Hentai): String {
+        val tags = data.tags.groupBy { it.type }
         return buildString {
-            grouped["category"]?.joinToString { it.name }?.let { append("Categories: $it\n") }
-            grouped["parody"]?.joinToString { it.name }?.let { append("Parodies: $it\n") }
-            grouped["character"]?.joinToString { it.name }?.let { append("Characters: $it\n") }
-            grouped["language"]?.joinToString { it.name }?.let { append("Language: $it\n") }
+            tags["category"]?.joinToString { it.name }?.let {
+                append("Categories: ", it, "\n")
+            }
+            tags["parody"]?.joinToString { it.name }?.let {
+                append("Parodies: ", it, "\n")
+            }
+            tags["character"]?.joinToString { it.name }?.let {
+                append("Characters: ", it, "\n\n")
+            }
         }
     }
+
+    fun getTags(data: Hentai): String {
+        val artists = data.tags.filter { it.type == "tag" }
+        return artists.joinToString(", ") { it.name }
+    }
+
+    private fun Element.cleanTag(): String = text().replace(Regex("\\(.*\\)"), "").trim()
 }

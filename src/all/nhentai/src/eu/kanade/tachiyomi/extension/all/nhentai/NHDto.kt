@@ -3,74 +3,42 @@ package eu.kanade.tachiyomi.extension.all.nhentai
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GalleryListResponse(
-    val result: List<GalleryListItem>,
-    val num_pages: Int,
-    val per_page: Int = 25,
-    val page: Int = 1,
-    val total: Int? = null,
-)
-
-@Serializable
-data class GalleryListItem(
-    val id: Int,
+class Hentai(
+    var id: Int,
+    val images: Images,
     val media_id: String,
-    val thumbnail: String,
-    val english_title: String,
-    val japanese_title: String? = null,
-    val tag_ids: List<Int> = emptyList(),
-)
-
-@Serializable
-data class GalleryDetail(
-    val id: Int,
-    val media_id: String,
-    val title: GalleryTitle,
-    val cover: CoverInfo,
-    val thumbnail: CoverInfo,
+    val tags: List<Tag>,
+    val title: Title,
     val upload_date: Long,
-    val tags: List<TagResponse>,
-    val num_pages: Int,
-    val num_favorites: Int,
+    val num_favorites: Long,
 )
 
 @Serializable
-data class GalleryTitle(
-    val english: String,
+class Title(
+    var english: String? = null,
     val japanese: String? = null,
-    val pretty: String,
+    val pretty: String? = null,
 )
 
 @Serializable
-data class CoverInfo(
-    val path: String,
-    val width: Int,
-    val height: Int,
+class Images(
+    val pages: List<Image>,
 )
 
 @Serializable
-data class TagResponse(
-    val id: Int,
-    val type: String,
+class Image(
+    private val t: String,
+) {
+    val extension get() = when (t) {
+        "w" -> "webp"
+        "p" -> "png"
+        "g" -> "gif"
+        else -> "jpg"
+    }
+}
+
+@Serializable
+class Tag(
     val name: String,
-    val slug: String,
-    val url: String,
-    val count: Int,
-)
-
-@Serializable
-data class GalleryPagesResponse(
-    val gallery_id: Int,
-    val media_id: String,
-    val num_pages: Int,
-    val pages: List<PageInfo>,
-)
-
-@Serializable
-data class PageInfo(
-    val number: Int,
-    val path: String,
-    val width: Int,
-    val height: Int,
-    val thumbnail: String,
+    val type: String,
 )

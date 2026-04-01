@@ -3,42 +3,56 @@ package eu.kanade.tachiyomi.extension.all.nhentai
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Hentai(
-    var id: Int,
-    val images: Images,
-    val media_id: String,
-    val tags: List<Tag>,
-    val title: Title,
+data class GalleryDetail(
+    val id: Int,
+    val title: GalleryTitle,
+    val thumbnail: GalleryImage,
+    val tags: List<Tag> = emptyList(),
+    val num_pages: Int,
+    val num_favorites: Int,
     val upload_date: Long,
-    val num_favorites: Long,
 )
 
 @Serializable
-class Title(
-    var english: String? = null,
+data class GalleryTitle(
+    val english: String = "",
     val japanese: String? = null,
-    val pretty: String? = null,
+    val pretty: String = "",
 )
 
 @Serializable
-class Images(
-    val pages: List<Image>,
+data class GalleryImage(
+    val path: String,
+)
+
+// API v2 PaginatedResponse does NOT include a "page" field — only num_pages.
+// We track current page ourselves in the request.
+@Serializable
+data class GalleryListResponse(
+    val result: List<GalleryListItem>,
+    val num_pages: Int,
 )
 
 @Serializable
-class Image(
-    private val t: String,
-) {
-    val extension get() = when (t) {
-        "w" -> "webp"
-        "p" -> "png"
-        "g" -> "gif"
-        else -> "jpg"
-    }
-}
+data class GalleryListItem(
+    val id: Int,
+    val english_title: String = "",
+    val japanese_title: String? = null,
+    val thumbnail: String,
+)
 
 @Serializable
-class Tag(
+data class GalleryPagesResponse(
+    val pages: List<GalleryPage>,
+)
+
+@Serializable
+data class GalleryPage(
+    val path: String,
+)
+
+@Serializable
+data class Tag(
     val name: String,
     val type: String,
 )
